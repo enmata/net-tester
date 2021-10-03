@@ -1,0 +1,118 @@
+{
+  "Comment": "ASSESSMENT-StepFunctions",
+  "StartAt": "Initializing",
+  "States": {
+    "Initializing": {
+      "Type": "Wait",
+      "Seconds": 2,
+      "Next": "Testing"
+    },
+    "Testing": {
+      "Type": "Parallel",
+      "Next": "EndNotification",
+      "Branches": [
+        {
+         "StartAt": "TestUDP-Run",
+         "States": {
+           "TestUDP-Run": {
+             "Type": "Task",
+             "Resource":
+               "arn:aws:lambda:eu-central-1:519159021228:function:TestUDP",
+               "Parameters":{
+                 "BUCKET_NAME": "results-bucket-12345",
+                 "DEVICEID": "Cisco2950",
+                 "TESTID": "TestUDP",
+                 "TIMESTAMP": "202001101212"
+               },
+               "Next": "TestUDP-Results2Bucket"
+           },
+           "TestUDP-Results2Bucket": {
+             "Type": "Task",
+             "InputPath": "$",
+             "ResultPath": "$.taskresult",
+             "Resource": "arn:aws:lambda:eu-central-1:519159021228:function:JustStore",
+             "End": true
+           }
+          }
+         },
+         {
+          "StartAt": "TestTCP-Run",
+          "States": {
+            "TestTCP-Run": {
+              "Type": "Task",
+              "Resource":
+                "arn:aws:lambda:eu-central-1:519159021228:function:TestTCP",
+                "Parameters":{
+                  "BUCKET_NAME": "results-bucket-12345",
+                  "DEVICEID": "Juniper",
+                  "TESTID": "TestTCP",
+                  "TIMESTAMP": "202001101212"
+                },
+                "Next": "TestTCP-Results2Bucket"
+              },
+            "TestTCP-Results2Bucket": {
+              "Type": "Task",
+              "InputPath": "$",
+              "ResultPath": "$.taskresult",
+              "Resource": "arn:aws:lambda:eu-central-1:519159021228:function:JustStore",
+              "End": true
+            }
+           }
+          },
+          {
+           "StartAt": "TestICMP-Run",
+           "States": {
+             "TestICMP-Run": {
+               "Type": "Task",
+               "Resource":
+               "arn:aws:lambda:eu-central-1:519159021228:function:TestICMP",
+               "Parameters":{
+                 "BUCKET_NAME": "results-bucket-12345",
+                 "DEVICEID": "Brocade2950",
+                 "TESTID": "TestICMP",
+                 "TIMESTAMP": "202001101212"
+               },
+               "Next": "TestICMP-Results2Bucket"
+             },
+             "TestICMP-Results2Bucket": {
+               "Type": "Task",
+               "InputPath": "$",
+               "ResultPath": "$.taskresult",
+               "Resource": "arn:aws:lambda:eu-central-1:519159021228:function:JustStore",
+               "End": true
+             }
+           }
+          },
+          {
+           "StartAt": "TestHTTP-Run",
+             "States": {
+             "TestHTTP-Run": {
+               "Type": "Task",
+               "Resource":
+               "arn:aws:lambda:eu-central-1:519159021228:function:TestHTTP",
+               "Parameters":{
+                 "BUCKET_NAME": "results-bucket-12345",
+                 "DEVICEID": "Verizon2950",
+                 "TESTID": "TestHTTP",
+                 "TIMESTAMP": "202001101212"
+               },
+               "Next": "TestHTTP-Results2Bucket"
+             },
+             "TestHTTP-Results2Bucket": {
+               "Type": "Task",
+               "InputPath": "$",
+               "ResultPath": "$.taskresult",
+               "Resource": "arn:aws:lambda:eu-central-1:519159021228:function:JustStore",
+               "End": true
+             }
+           }
+         }
+        ]
+      },
+      "EndNotification": {
+        "Type": "Pass",
+        "Result": "Publishing Results",
+        "End": true
+      }
+    }
+  }

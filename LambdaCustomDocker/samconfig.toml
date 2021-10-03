@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "ASSESSMENT-DockerDockerStack"
+s3_prefix = "ASSESSMENT-DockerDockerStack"
+region = "eu-central-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["TestTCP=519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry", "TestUDP=519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry", "TestICMP=519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry", "TestHTTP=519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry"]
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-6tkqlw8uzouc"

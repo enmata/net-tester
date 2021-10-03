@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ASSESSMENT-Lamda Stack Docker
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  TestTCP:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TestTCP
+      ImageUri:  519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry:net-tester-python
+      PackageType: Image
+      Policies:
+      - arn:aws:iam::519159021228:policy/S3AllowPutObjectPolicy
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  TestUDP:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TestUDP
+      ImageUri:  519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry:net-tester-python
+      PackageType: Image
+      Policies:
+      - arn:aws:iam::519159021228:policy/S3AllowPutObjectPolicy
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  TestICMP:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TestICMP
+      ImageUri:  519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry:net-tester-python
+      PackageType: Image
+      Policies:
+      - arn:aws:iam::519159021228:policy/S3AllowPutObjectPolicy
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  TestHTTP:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TestHTTP
+      ImageUri:  519159021228.dkr.ecr.eu-central-1.amazonaws.com/net-tester-registry:net-tester-python
+      PackageType: Image
+      Policies:
+      - arn:aws:iam::519159021228:policy/S3AllowPutObjectPolicy
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

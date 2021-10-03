@@ -1,0 +1,77 @@
+# These file contains the definition of:
+# -The Bucket that will host the test results
+# -policies and roles
+# -SFTP Server
+# -sFTP Server test “demouser”
+Description: ASSESSMENT-Bucket params Stack
+Resources:
+  # Deploying the bucket itself
+  ResultsBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: results-bucket-12345
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  # Allowing Lambda and Custom Docker Containers to upload and tag files on these bucket
+  S3AllowPutObjectPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: S3AllowPutObjectPolicy
+      Description: ASSESSMENT-Amazon S3 Put policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:PutObject'
+              - 's3:PutObjectTagging'
+            Resource: 'arn:aws:s3:::results-bucket-12345/*'
+    DependsOn:
+      - ResultsBucket
+  # Linking POlicy Role
+  S3AllowPutObjectRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: S3AllowPutObjectRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - !Ref S3AllowPutObjectPolicy
+    DependsOn:
+      - S3AllowPutObjectPolicy
+  # Creating the notification sFTP server
+  S3ResultsSFTPServer:
+    Type: 'AWS::Transfer::Server'
+    Properties:
+      EndpointType: PUBLIC
+    DependsOn:
+      - ResultsBucket
+  # Creating a demo user, needs to be securized
+  S3ResultsSFTPServerUser:
+    Type: 'AWS::Transfer::User'
+    Properties:
+      HomeDirectory: '/demouser'
+      Role: !GetAtt S3AllowPutObjectRole.Arn
+      ServerId: !GetAtt S3ResultsSFTPServer.ServerId
+      SshPublicKeys:
+        - 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTGK9Tjom/BWDSU
+GPl+nafzlHDTYW7hdI4yZ5ew18JH4JW9jbhUFrviQzM7xlELEVf4h9lFX5QVkbPppSwg0cda3
+Pbv7kOdJ/MTyBlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSlVK/7XA
+t3FaoJoAsncM1Q9x5+3V0Ww68/eIFmb1zuUFljQJKprrX88XypNDvjYNby6vw/Pb0rwert/En
+mZ+AW4OZPnTPI89ZPmVMLuayrD2cE86Z/il8b+gw3r3+1nKatmIkjn2so1d01QraTlMqVSsbx
+NrRFi9wrf+M7Q=='
+      UserName: demouser
+    DependsOn:
+      - S3AllowPutObjectRole
+      - S3ResultsSFTPServer

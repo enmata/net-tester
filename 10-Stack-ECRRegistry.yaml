@@ -1,0 +1,7 @@
+# These file contains the definition of the Registry hosting custom Docker images for testing
+Description: ASSESSMENT-Docker Registry for Testers image
+Resources:
+  nettestersregistry:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: net-tester-registry
